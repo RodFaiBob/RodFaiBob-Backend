@@ -1,3 +1,5 @@
+import math
+
 class Station():
     def __init__(self, id: str, lat: float, long: float):
         self.id = id
