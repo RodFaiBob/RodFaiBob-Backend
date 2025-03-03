@@ -83,10 +83,10 @@ async def heuristic_path(request: StationRequest):
     if not start_station or not goal_station:
         raise HTTPException(status_code=404, detail="Station not found.")
     
-    path, cost = A_star(start_station, goal_station)
+    path, cost, runtime, cpu = A_star(start_station, goal_station)
     
     if path:
-        return {"path": [station.id for station in path], "cost": cost}
+        return {"path": [station.id for station in path], "cost": cost, "runtime" : runtime, "cpu" : cpu}
     else:
         raise HTTPException(status_code=404, detail="No path found.")
 
@@ -99,9 +99,9 @@ async def blind_path(request: StationRequest):
     if not start_station or not goal_station:
         raise HTTPException(status_code=404, detail="Station not found.")
     
-    path, cost = BFS(start_station, goal_station)
+    path, cost, runtime, cpu = BFS(start_station, goal_station)
     
     if path:
-        return {"path": [station.id for station in path], "cost": cost}
+        return {"path": [station.id for station in path], "cost": cost, "runtime" : runtime, "cpu" : cpu}
     else:
         raise HTTPException(status_code=404, detail="No path found.")

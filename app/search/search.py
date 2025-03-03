@@ -1,5 +1,7 @@
 import math
 import heapq
+import time
+import psutil
 from typing import List, Tuple, Union
 
 class Station():
@@ -49,9 +51,12 @@ class Station():
         
         return self.edges[node]
 
-def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float]:
+def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float, float, float]:
     visited = set()
     queue = [[start]]
+
+    start_time = time.time()
+    start_cpu = psutil.cpu_percent(interval=None)
 
     while queue:
         path = queue.pop(0)
@@ -71,10 +76,17 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
                 cost = station.getCostToNode(path[n_station + 1])
 
                 if cost == -1:
-                    return None, float('inf')
+                    return None, float('inf'), None, None
 
                 sum_cost += cost
-            return path, sum_cost
+
+                end_time = time.time()
+                end_cpu = psutil.cpu_percent(interval=None)
+
+                runtime = end_time - start_time
+                avg_cpu = (start_cpu + end_cpu) / 2
+
+            return path, sum_cost, runtime, avg_cpu
 
         if node not in visited:
             visited.add(node)
@@ -84,11 +96,14 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
                 new_path = path + [neighbor]
                 queue.append(new_path)
     
-    return None, float('inf')
+    return None, float('inf'), None, None
 
-def A_star(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float]:
+def A_star(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float, float, float]:
     open_list = []
     
+    start_time = time.time()
+    start_cpu = psutil.cpu_percent(interval=None)
+
     f_start = 0 + (goal - start)
     heapq.heappush(open_list, (f_start, start))
     
@@ -105,7 +120,14 @@ def A_star(start: Station, goal: Station) -> Tuple[Union[List[Station], None], f
                 current = came_from[current]
             path.append(start)
             path.reverse()
-            return path, g_score[goal]
+
+            end_time = time.time()
+            end_cpu = psutil.cpu_percent(interval=None)
+
+            runtime = end_time - start_time
+            avg_cpu = (start_cpu + end_cpu) / 2
+
+            return path, g_score[goal], runtime, avg_cpu
         
         for neighbor, cost in current.edges.items():
             tentative_g_score = g_score[current] + cost
@@ -117,4 +139,4 @@ def A_star(start: Station, goal: Station) -> Tuple[Union[List[Station], None], f
                 
                 heapq.heappush(open_list, (f_score, neighbor))
     
-    return None, float('inf')
+    return None, float('inf'), None, None
