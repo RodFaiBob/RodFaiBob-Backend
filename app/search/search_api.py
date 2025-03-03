@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.search.search import Station, A_star, BFS
+from app.search.search import  A_star, BFS
+from station import Station
 from pydantic import BaseModel
 
 
