@@ -2,7 +2,7 @@ import heapq
 import time
 import psutil
 from typing import List, Tuple, Union
-from app.search.station import Station
+from app.model.station import Station
 
 def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float, float, float]:
     visited = set()

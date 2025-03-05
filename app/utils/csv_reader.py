@@ -1,5 +1,5 @@
 import csv
-from app.search.station import Station
+from app.model.station import Station
 
 STATIONS: dict[str, Station] = {}
 

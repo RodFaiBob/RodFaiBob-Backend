@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.search.search import  A_star, BFS
-from app.search.csv_reader import STATIONS
+from app.utils.csv_reader import STATIONS
 from pydantic import BaseModel
 
 
