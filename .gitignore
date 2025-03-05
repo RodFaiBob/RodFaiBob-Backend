@@ -137,3 +137,5 @@ cython_debug/
 app/__pycache__
 app/search/__pycache__
 env
+
+video
