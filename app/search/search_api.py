@@ -22,11 +22,7 @@ async def heuristic_path(start: str, goal: str):
     if not start_station or not goal_station:
         raise HTTPException(status_code=404, detail="Station not found.")
     
-    path, cost, runtime, cpu, nodes, edges = A_star(start_station, goal_station)
-    
-    
-    save_animation(path, nodes, edges, "video/heuristic")
-    
+    path, cost, runtime, cpu, _, _ = A_star(start_station, goal_station)
     
     if path:
         return {"path": [station.id for station in path], "cost": cost, "runtime" : runtime, "cpu" : cpu}
@@ -42,8 +38,8 @@ async def blind(start: str, goal: str):
     if not start_station or not goal_station:
         raise HTTPException(status_code=404, detail="Station not found.")
     
-    path, cost, runtime, cpu = BFS(start_station, goal_station)
-    
+    path, cost, runtime, cpu, _, _ = BFS(start_station, goal_station)
+
     if path:
         return {"path": [station.id for station in path], "cost": cost, "runtime" : runtime, "cpu" : cpu}
     else:
@@ -54,8 +50,14 @@ async def getNodes():
     return {"nodes": [node.toDict() for _, node in STATIONS.items()]}
 
 @router.get("/video/heuristic")
-async def get_video():
-    video_path = "video/heuristic/vid.mp4"
+async def get_video(start: str, goal: str):
+    start_station = STATIONS.get(start)
+    goal_station = STATIONS.get(goal)
+    
+    if not start_station or not goal_station:
+        raise HTTPException(status_code=404, detail="Station not found.")
+    
+    video_path = f"video/heuristic/{start}_{goal}.mp4"
     
     if os.path.exists(video_path):
         return FileResponse(video_path)
@@ -63,10 +65,55 @@ async def get_video():
         return {"error": "Video file not found"}
     
 @router.get("/video/blind")
-async def get_video():
-    video_path = "video/blind/vid.mp4"
+async def get_video(start: str, goal: str):
+    start_station = STATIONS.get(start)
+    goal_station = STATIONS.get(goal)
+    
+    if not start_station or not goal_station:
+        raise HTTPException(status_code=404, detail="Station not found.")
+    
+    video_path = f"video/blind/{start}_{goal}.mp4"
     
     if os.path.exists(video_path):
         return FileResponse(video_path)
     else:
         return {"error": "Video file not found"}
+
+
+
+@router.get("/video/heuristic/gen")
+async def get_video(start: str, goal: str):
+    start_station = STATIONS.get(start)
+    goal_station = STATIONS.get(goal)
+    
+    if not start_station or not goal_station:
+        raise HTTPException(status_code=404, detail="Station not found.")
+    
+    path, _, _, _, nodes, edges = A_star(start_station, goal_station)
+    video_path = f"video/heuristic/{start}_{goal}.mp4"
+    
+    if os.path.exists(video_path):
+            return {"status": "ok"}
+    
+    save_animation(path, nodes, edges, video_path)
+    
+    return {"status": "ok"}
+    
+@router.get("/video/blind/gen")
+async def get_video(start: str, goal: str):
+    start_station = STATIONS.get(start)
+    goal_station = STATIONS.get(goal)
+    
+    if not start_station or not goal_station:
+        raise HTTPException(status_code=404, detail="Station not found.")
+    
+    path, _, _, _, nodes, edges = BFS(start_station, goal_station)
+    
+    video_path = f"video/blind/{start}_{goal}.mp4"
+    
+    if os.path.exists(video_path):
+            return {"status": "ok"}
+    
+    save_animation(path, nodes, edges, video_path)
+    
+    return {"status": "ok"}

@@ -4,16 +4,21 @@ import psutil
 from typing import List, Tuple, Union
 from app.model.station import Station
 
-def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float, float, float]:
+def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float, float, float, List[Station], List[Tuple[Station, Station]]]:
     visited = set()
     queue = [[start]]
 
     start_time = time.time()
     start_cpu = psutil.cpu_percent(interval=None)
-
+    
+    visited_edges = []
+    
     while queue:
         path = queue.pop(0)
-        node = path[-1]
+        node = path[-1] 
+    
+        if node != start:
+            visited_edges.append((path[-2], node))
 
         if node == goal:
             sum_cost = 0
@@ -38,8 +43,8 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
 
                 runtime = end_time - start_time
                 avg_cpu = (start_cpu + end_cpu) / 2
-
-            return path, sum_cost, runtime, avg_cpu
+            
+            return path, sum_cost, runtime, avg_cpu, list(visited), visited_edges
 
         if node not in visited:
             visited.add(node)
@@ -49,7 +54,7 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
                 new_path = path + [neighbor]
                 queue.append(new_path)
     
-    return None, float('inf'), None, None
+    return None, float('inf'), None, None, None, None
 
 def A_star(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float, float, float, List[Station], List[Tuple[Station, Station]]]:
     open_list = []
