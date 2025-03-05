@@ -1,22 +1,20 @@
 from fastapi import APIRouter, HTTPException
 from app.search.search import  A_star, BFS
-from app.search.init import stations
+from app.search.csv_reader import STATIONS
 from pydantic import BaseModel
 
 
-# Create a router instance to handle search-related endpoints
 router = APIRouter()
 
-# FastAPI Model for Request Data
 class StationRequest(BaseModel):
     start: str
     goal: str
 
 # A* Endpoint
-@router.post("/heuristic")
-async def heuristic_path(request: StationRequest):
-    start_station = stations.get(request.start)
-    goal_station = stations.get(request.goal)
+@router.get("/heuristic")
+async def heuristic_path(start: str, goal: str):
+    start_station = STATIONS.get(start)
+    goal_station = STATIONS.get(goal)
     
     if not start_station or not goal_station:
         raise HTTPException(status_code=404, detail="Station not found.")
@@ -29,10 +27,10 @@ async def heuristic_path(request: StationRequest):
         raise HTTPException(status_code=404, detail="No path found.")
 
 # BFS Endpoint
-@router.post("/blind")
-async def blind_path(request: StationRequest):
-    start_station = stations.get(request.start)
-    goal_station = stations.get(request.goal)
+@router.get("/blind")
+async def blind(start: str, goal: str):
+    start_station = STATIONS.get(start)
+    goal_station = STATIONS.get(goal)
     
     if not start_station or not goal_station:
         raise HTTPException(status_code=404, detail="Station not found.")

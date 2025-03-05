@@ -53,7 +53,6 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
 
 def A_star(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float, float, float]:
     open_list = []
-    
     start_time = time.time()
     start_cpu = psutil.cpu_percent(interval=None)
 
