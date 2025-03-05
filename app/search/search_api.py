@@ -41,3 +41,7 @@ async def blind(start: str, goal: str):
         return {"path": [station.id for station in path], "cost": cost, "runtime" : runtime, "cpu" : cpu}
     else:
         raise HTTPException(status_code=404, detail="No path found.")
+
+@router.get("/nodes")
+async def getNodes():
+    return {"nodes": [node.toDict() for _, node in STATIONS.items()]}

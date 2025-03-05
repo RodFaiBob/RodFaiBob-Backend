@@ -1,8 +1,9 @@
 import math
 
 class Station():
-    def __init__(self, id: str, lat: float, long: float):
+    def __init__(self, id: str, name: str, lat: float, long: float):
         self.id = id
+        self.name = name
         self.lat = lat
         self.long = long
         self.edges = {}
@@ -13,6 +14,9 @@ class Station():
         
         self.edges[node] = cost
         node.edges[self] = cost
+    
+    def toDict(self):
+        return {"id": self.id, "name": self.name, "lat": self.lat, "long": self.long}
     
     def __sub__(self, other):
         if not isinstance(other, Station):

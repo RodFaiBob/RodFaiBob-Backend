@@ -14,11 +14,12 @@ def nodeInit(csv_file: str):
         
         for row in reader:
             try:
-                station_name = row[0].strip()
-                lat = float(row[1])
-                long = float(row[2])
+                id = row[0].strip()
+                name = row[1].strip()
+                lat = float(row[2])
+                long = float(row[3])
                 
-                STATIONS[row[0]] = Station(station_name, lat, long)
+                STATIONS[id] = Station(id, name, lat, long)
                 
             except Exception as e:
                 print(f"Error for row {row}: {repr(e)}")
