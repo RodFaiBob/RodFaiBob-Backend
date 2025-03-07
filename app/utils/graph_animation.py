@@ -7,6 +7,15 @@ last_access_frame = 0
 
 def save_animation(path, nodes, edges, filename):
     global last_access_frame
+
+    # Ensure the directory for the file exists
+    dir_path = os.path.dirname(filename)
+    if not os.path.exists(dir_path):
+        print(f"Creating directory: {dir_path}")
+        os.makedirs(dir_path, exist_ok=True)  # Use exist_ok to prevent race conditions
+
+    print(f"Saving animation to: {filename}")  # Debugging
+
     lats = [station.lat for station in nodes]
     longs = [station.long for station in nodes]
 
@@ -23,11 +32,10 @@ def save_animation(path, nodes, edges, filename):
 
     ax.set_axis_off()
     ax.grid(False)
-    
+
     def update(frame):
         global last_access_frame
 
-        # Process all skipped frames between last_access_frame and current frame
         new_edges = edges[last_access_frame:frame]
 
         for i, (src, dest) in enumerate(new_edges):
@@ -46,28 +54,29 @@ def save_animation(path, nodes, edges, filename):
         last_access_frame = frame  # Update last processed frame
         return edge_lines[last_access_frame:frame]
 
-    writer = animation.FFMpegWriter(fps=20)
-
+    # Check if ffmpeg is installed and available
+    try:
+        writer = animation.FFMpegWriter(fps=20)
+    except Exception as e:
+        print(f"FFMpegWriter Error: {e}")
+        return
 
     num_frames = 100
     frame_indices = [round(i * (len(edges) - 1) / (num_frames - 1)) for i in range(num_frames)]
 
     ani = animation.FuncAnimation(fig, update, frames=frame_indices, interval=1, repeat=False)
 
-    dir_path = os.path.dirname(filename) 
-
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path) 
     try:
         ani.save(filename, writer=writer)
-
-    except Exception as e:
+        print(f"Animation successfully saved: {filename}")
+    except FileNotFoundError as e:
         print(f"Error saving file: {e}")
+        print("Possible cause: FFmpeg is missing, invalid path, or permission issues.")
+    except Exception as e:
+        print(f"Unexpected error while saving: {e}")
         if os.path.exists(filename):
             os.remove(filename)
             print(f"Corrupted file '{filename}' has been removed.")
-    last_access_frame = 0
-    plt.close(fig) 
-    
-    
-
+    finally:
+        last_access_frame = 0
+        plt.close(fig)

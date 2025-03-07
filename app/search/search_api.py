@@ -82,38 +82,63 @@ async def get_video(start: str, goal: str):
 
 
 @router.get("/video/heuristic/gen")
-async def get_video(start: str, goal: str):
+async def gen_video(start: str, goal: str):
     start_station = STATIONS.get(start)
     goal_station = STATIONS.get(goal)
-    
+
     if not start_station or not goal_station:
         raise HTTPException(status_code=404, detail="Station not found.")
-    
+
     path, _, _, _, nodes, edges = A_star(start_station, goal_station)
-    video_path = f"video/heuristic/{start}_{goal}.mp4"
-    
+
+    # Ensure the directory exists
+    video_dir = os.path.abspath("video/heuristic")  # Ensure absolute path
+    if not os.path.exists(video_dir):
+        os.makedirs(video_dir, exist_ok=True)
+
+    video_path = os.path.join(video_dir, f"{start}_{goal}.mp4")
+
+    # If the file already exists, return success without regenerating
     if os.path.exists(video_path):
-            return {"status": "ok"}
-    
-    save_animation(path, nodes, edges, video_path)
-    
-    return {"status": "ok"}
-    
+        return {"status": "ok"}
+
+    try:
+        save_animation(path, nodes, edges, video_path)
+        return {"status": "ok"}
+    except Exception as e:
+        print(f"Error saving file: {e}")
+        if os.path.exists(video_path):
+            os.remove(video_path)
+            print(f"Corrupted file '{video_path}' has been removed.")
+        return {"status": "error", "message": str(e)}
+
 @router.get("/video/blind/gen")
-async def get_video(start: str, goal: str):
+async def gen_video(start: str, goal: str):
     start_station = STATIONS.get(start)
     goal_station = STATIONS.get(goal)
-    
+
     if not start_station or not goal_station:
         raise HTTPException(status_code=404, detail="Station not found.")
-    
+
     path, _, _, _, nodes, edges = BFS(start_station, goal_station)
-    
-    video_path = f"video/blind/{start}_{goal}.mp4"
-    
+
+    # Ensure the directory exists
+    video_dir = os.path.abspath("video/blind")
+    if not os.path.exists(video_dir):
+        os.makedirs(video_dir, exist_ok=True)
+
+    video_path = os.path.join(video_dir, f"{start}_{goal}.mp4")
+
+    # If the file already exists, return success without regenerating
     if os.path.exists(video_path):
-            return {"status": "ok"}
-    
-    save_animation(path, nodes, edges, video_path)
-    
-    return {"status": "ok"}
+        return {"status": "ok"}
+
+    try:
+        save_animation(path, nodes, edges, video_path)
+        return {"status": "ok"}
+    except Exception as e:
+        print(f"Error saving file: {e}")
+        if os.path.exists(video_path):
+            os.remove(video_path)
+            print(f"Corrupted file '{video_path}' has been removed.")
+        return {"status": "error", "message": str(e)}
