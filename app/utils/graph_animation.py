@@ -36,7 +36,7 @@ def save_animation(path, nodes, edges, filename):
     def update(frame):
         global last_access_frame
 
-        new_edges = edges[last_access_frame:frame]
+        new_edges = edges[last_access_frame:frame + 1 ]
 
         for i, (src, dest) in enumerate(new_edges):
             edge_index = last_access_frame + i  # Calculate the actual index
