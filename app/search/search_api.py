@@ -1,5 +1,5 @@
 import os
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException,BackgroundTasks
 from fastapi.responses import FileResponse
 from app.search.search import  A_star, BFS
 from app.utils.csv_reader import STATIONS
@@ -82,7 +82,7 @@ async def get_video(start: str, goal: str):
 
 
 @router.get("/video/heuristic/gen")
-async def gen_video(start: str, goal: str):
+async def gen_video(start: str, goal: str, background_tasks: BackgroundTasks):
     start_station = STATIONS.get(start)
     goal_station = STATIONS.get(goal)
 
@@ -103,7 +103,7 @@ async def gen_video(start: str, goal: str):
         return {"status": "ok"}
 
     try:
-        save_animation(path, nodes, edges, video_path)
+        background_tasks.add_task(save_animation(path, nodes, edges, video_path))
         return {"status": "ok"}
     except Exception as e:
         print(f"Error saving file: {e}")
@@ -113,7 +113,7 @@ async def gen_video(start: str, goal: str):
         return {"status": "error", "message": str(e)}
 
 @router.get("/video/blind/gen")
-async def gen_video(start: str, goal: str):
+async def gen_video(start: str, goal: str,background_tasks: BackgroundTasks):
     start_station = STATIONS.get(start)
     goal_station = STATIONS.get(goal)
 
@@ -134,7 +134,7 @@ async def gen_video(start: str, goal: str):
         return {"status": "ok"}
 
     try:
-        save_animation(path, nodes, edges, video_path)
+        background_tasks.add_task(save_animation(path, nodes, edges, video_path))
         return {"status": "ok"}
     except Exception as e:
         print(f"Error saving file: {e}")
