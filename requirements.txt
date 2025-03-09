@@ -1,5 +1,6 @@
-uvicorn
+uvicorn[standard]
 fastapi
 pydantic
 psutil
 matplotlib
+gunicorn
