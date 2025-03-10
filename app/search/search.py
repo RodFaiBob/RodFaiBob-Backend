@@ -43,7 +43,7 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
             
             runtime = end_time - start_time
             avg_cpu = (start_cpu + end_cpu) / 2
-            
+            visited.add(node)
             return path, sum_cost, runtime, avg_cpu, list(visited), visited_edges
 
         if node not in visited:
