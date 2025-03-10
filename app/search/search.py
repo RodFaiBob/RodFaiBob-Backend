@@ -4,20 +4,6 @@ import psutil
 from typing import List, Tuple, Union
 from app.model.station import Station
 
-def getCostByPath(path):
-  sum_cost = 0
-  for i in range(len(path)):
-    station = path[i]
-
-    if i >= len(path) - 1:
-      break
-
-    cost = station.getCostToNode(path[i + 1])
-
-    sum_cost += cost
-  return sum_cost
-
-
 def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float, float, float, List[Station], List[Tuple[Station, Station]]]:
     visited = set()
     queue = [[start]]
@@ -35,22 +21,30 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
             visited_edges.append((path[-2], node))
 
         if node == goal:
-            current_path = path
-            currnet_cost = getCostByPath(path)
-            for sub_path in queue:
-                if sub_path[-1] == goal:
-                    target_cost = getCostByPath(sub_path)
-                    if target_cost < currnet_cost:
-                        current_path = sub_path
-                        currnet_cost = target_cost
+            sum_cost = 0
+            for n_station in range(len(path) - 1):
+                station = path[n_station]
+
+                if not isinstance(station, Station):
+                    raise Exception('This method cannot be done with different class')
+                
+                if station == goal:
+                    break
+
+                cost = station.getCostToNode(path[n_station + 1])
+
+                if cost == -1:
+                    return None, float('inf'), None, None
+
+                sum_cost += cost
 
             end_time = time.time()
             end_cpu = psutil.cpu_percent(interval=None)
-
+            
             runtime = end_time - start_time
             avg_cpu = (start_cpu + end_cpu) / 2
             
-            return current_path, currnet_cost, runtime, avg_cpu, list(visited), visited_edges
+            return path, sum_cost, runtime, avg_cpu, list(visited), visited_edges
 
         if node not in visited:
             visited.add(node)
