@@ -38,11 +38,11 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
 
                 sum_cost += cost
 
-                end_time = time.time()
-                end_cpu = psutil.cpu_percent(interval=None)
-
-                runtime = end_time - start_time
-                avg_cpu = (start_cpu + end_cpu) / 2
+            end_time = time.time()
+            end_cpu = psutil.cpu_percent(interval=None)
+            
+            runtime = end_time - start_time
+            avg_cpu = (start_cpu + end_cpu) / 2
             
             return path, sum_cost, runtime, avg_cpu, list(visited), visited_edges
 
@@ -55,6 +55,7 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
                 queue.append(new_path)
     
     return None, float('inf'), None, None, None, None
+
 
 def A_star(start: Station, goal: Station) -> Tuple[Union[List[Station], None], float, float, float, List[Station], List[Tuple[Station, Station]]]:
     open_list = []
