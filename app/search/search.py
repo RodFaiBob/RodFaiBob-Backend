@@ -37,11 +37,11 @@ def BFS(start: Station, goal: Station) -> Tuple[Union[List[Station], None], floa
         if node == goal:
             current_path = path
             currnet_cost = getCostByPath(path)
-            for p in queue:
-                if p[-1] == goal:
+            for sub_path in queue:
+                if sub_path[-1] == goal:
                     target_cost = getCostByPath(p)
                     if target_cost < currnet_cost:
-                        current_path = p
+                        current_path = sub_path
                         currnet_cost = target_cost
 
             end_time = time.time()
