@@ -28,7 +28,4 @@ app.include_router(search_router)
 async def read_root():
     return {"message": "Welcome to RodFaiBob-Backend"}
 
-#! /usr/bin/env python3
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app.api:app", host="0.0.0.0", port=8000, reload=True)
+
